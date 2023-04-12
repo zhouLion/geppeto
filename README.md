@@ -4,7 +4,7 @@
 
 An elegant, open-source alternative to the official UI for ChatGPT.
 
-Visit at [geppeto.chat](https://geppeto.chat).
+Visit at [chat-fedml.chat](https://chat-fedml.chat).
 
 ## Configuration
 You can use **environment variables** to customize your instance.

@@ -108,7 +108,7 @@ const onOpenKnowledgeManager = () => {
                 flex-col flex justify-center items-center
             >
                 <div font-black>
-                    geppeto
+                    chat-fedml
                 </div>
                 <div text-3 tracking-wide flex items-center gap-1 op-60>
                     made with <div i-tabler-heart-filled text-red /> by Caret
