@@ -19,19 +19,27 @@ const chatScroll = useScroll(container, {
         }
     },
 })
-const autoScrollInterval = ref()
-const isScrollToBottomButtonVisible = computed(() => {
+
+function getScrollHeight() {
     if (!container.value) {
         return false
     }
     const el = container.value
-    return chatScroll.y.value + 200 < el.scrollHeight - el.clientHeight
-})
+    return el.scrollHeight - el.clientHeight
+}
+
+const autoScrollInterval = ref()
+
 function scrollToBottom() {
+    logger.info('Scrolling to bottom')
     setTimeout(() => {
         chatScroll.y.value = container.value?.scrollHeight
     }, 10)
 }
+
+appProvide('scrollToBottom', scrollToBottom)
+appProvide('getScrollHeight', getScrollHeight)
+appProvide('chatScrolledHeight', chatScroll.y)
 
 watch(() => currentConversation.value?.id, (newId, oldId) => {
     if (newId === oldId) {
@@ -41,7 +49,9 @@ watch(() => currentConversation.value?.id, (newId, oldId) => {
     scrollToBottom()
 })
 
-onMounted(() => scrollToBottom())
+onMounted(() => {
+    setTimeout(() => scrollToBottom(), 300)
+})
 
 watch(isTypingInCurrentConversation, (newState, oldState) => {
     if (newState === oldState) {
@@ -88,39 +98,10 @@ function onFileDrop(event: any) {
         h-full overflow-y-auto pb-50
         z-0
         :class="[
-            embedded && '!pt-2',
-            isOnSharePage && '!pt-6',
+            isOnSharePage && '!pt-16',
         ]"
         @dragover.prevent @drop="onFileDrop"
     >
-        <!-- <div
-                v-if="isScrollToBottomButtonVisible"
-                fixed bottom-20
-                right-20 z-0 w-10
-                h-10 text-color
-                text-5
-                cursor-pointer
-                class="dark:bg-white/10" flex items-center
-                justify-center
-                rounded-3
-            >
-                <div i-tabler-arrow-bar-down />
-            </div> -->
-        <Transition name="appear-right">
-            <GpLongPressButton
-                v-if="isScrollToBottomButtonVisible"
-                icon="i-tabler-arrow-bar-down !text-4 sm:!text-6"
-                :duration="0"
-                success-style="!ring-primary !text-primary"
-                progress-bar-style="!bg-500/20"
-                class="!fixed"
-                bottom-30
-                right-8 sm:right-20
-                w-8 sm:w-10
-                z-10 @success="scrollToBottom"
-            />
-        </Transition>
-
         <slot />
     </div>
 </template>

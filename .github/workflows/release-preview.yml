@@ -45,8 +45,15 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
           VERCEL_SCOPE: ${{ secrets.VERCEL_ORG_ID }}
           PR_PREVIEW_DOMAIN: ${{ env.DOMAIN }}
-          FORCE: true
           BUILD_ENV: |
             REDIRECT_URL=${{ env.DOMAIN }}
-            GEPPETO_PASSWORD=${{ secrets.GEPPETO_PASSWORD }}#${{ steps.script.outputs.pr-number }}
+            GOLEM_PASSWORD=${{ secrets.GEPPETO_PASSWORD }}#${{ steps.script.outputs.pr-number }}
             APP_VERSION=${{ steps.script.outputs.ref }}#${{ steps.script.outputs.pr-number }}
+
+      - name: Deta Space Deployment
+        uses: neobrains/space-deployment-github-action@v0.5
+        with:
+          access_token: ${{ secrets.DETA_ACCESS_TOKEN }}
+          project_id: ${{ secrets.DETA_PROJECT_ID }}
+          space_push: true
+    

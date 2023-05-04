@@ -17,11 +17,11 @@ const settingsPageList = [
         icon: 'i-tabler-box-model-2',
         path: '/settings/model',
     },
-    isDetaEnabled.value && {
-        name: 'Deta',
-        icon: 'i-tabler-database',
-        path: '/settings/deta',
-    },
+    // isDetaEnabled.value && {
+    //     name: 'Deta',
+    //     icon: 'i-tabler-database',
+    //     path: '/settings/deta',
+    // },
 ].filter(Boolean) as {
     name: string
     icon: string
@@ -39,14 +39,13 @@ const route = useRoute()
             class="bg-white/90 dark:bg-dark-1/90"
         >
             <div
-                max-w-1080px mx-auto
-                px-4 sm:px-14
+                px-4
                 flex items-center
             >
                 <div>
                     <div
-                        text-14px sm:text-5
-                        font-bold text-gray-6 dark:text-gray-2
+                        text-14px sm:text-6
+                        font-bold font-title text-gray-6 dark:text-gray-2
                     >
                         Settings
                     </div>
@@ -55,10 +54,10 @@ const route = useRoute()
         </div>
         <div
             mt-2 max-w-1080px mx-auto
-            px-4 md:px-6 sm:px-16
+            px-4 md:px-6
             grid
             grid-cols-12 sm:grid-cols-6
-            gap-3 sm:gap-12 items-start
+            gap-3 md:gap-6 items-start
             pt-2 sm:pt-6
         >
             <div

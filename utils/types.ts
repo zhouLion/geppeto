@@ -10,12 +10,24 @@ export namespace types {
         updatedAt: Date
         type?: 'chat' | 'embbeded'
         systemMessage?: string
+        metadata?: ConversationMetadata
+    }
+
+    export interface ConversationMetadata {
+        systemMessage?: string
+        favorite?: boolean
     }
 
     export interface Message extends ChatMessage {
         updatedAt: Date
         createdAt: Date
         isError?: boolean
+        metadata?: MessageMetadata
+        actions?: any[]
+    }
+
+    export interface MessageMetadata {
+        favorite?: boolean
     }
 
     export interface KnowledgeItem {
@@ -41,6 +53,7 @@ export namespace types {
             title: string
             updatedAt: string
             createdAt: string
+            metadata?: ConversationMetadata
         }
 
         export interface Message {

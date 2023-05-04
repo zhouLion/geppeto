@@ -12,6 +12,7 @@ const onSendMessage = () => {
 
 const showPromptTooltip = ref(false)
 let tooltipTimeout: any
+
 function onHandlePromptClick() {
     if (!apiKey.value && !showPromptTooltip.value) {
         showPromptTooltip.value = true
@@ -57,5 +58,6 @@ function onHandlePromptClick() {
                 @click="onHandlePromptClick"
             />
         </div>
+        <AppChatScrollToBottomButton />
     </div>
 </template>

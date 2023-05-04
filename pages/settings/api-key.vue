@@ -1,7 +1,11 @@
 <script lang="ts" setup>
-const { apiKey } = useSettings()
+const { apiKey, instanceApiKey } = useSettings()
+const { isDetaEnabled } = useDeta()
+const { checkIfAPIKeyIsValid } = useLanguageModel()
 const apiKeyInput = syncStorageRef(apiKey)
-const { instanceApiKey } = useSettings()
+const client = useClient()
+
+const apiKeyError = ref<string | false>(false)
 
 const maskedApiKey = computed(() => {
     if (!instanceApiKey.value) {
@@ -10,6 +14,40 @@ const maskedApiKey = computed(() => {
     const apiKeyLength = instanceApiKey.value.length
     return instanceApiKey.value.slice(0, 4) + '•'.repeat(apiKeyLength - 8) + instanceApiKey.value.slice(apiKeyLength - 4)
 })
+
+// Check if the API key is valid
+async function onBlur(event: FocusEvent) {
+    const apiKey = (event.target as HTMLInputElement)?.value
+    if (apiKey) {
+        try {
+            await checkIfAPIKeyIsValid(apiKey)
+            apiKeyError.value = false
+        }
+        catch (e) {
+            apiKeyError.value = 'Invalid API key.'
+        }
+    }
+}
+
+if (isDetaEnabled.value) {
+    const updateAPIKeyOnDeta = useDebounceFn(async () => {
+        const { error } = await handle(checkIfAPIKeyIsValid(apiKeyInput.value || ''))
+        if (error) {
+            apiKeyError.value = 'Invalid API key.'
+            return
+        }
+        await client.deta.preferences.set.mutate({ key: 'api-key', value: apiKeyInput.value || '' })
+        instanceApiKey.value = apiKeyInput.value || ''
+        apiKey.value = apiKeyInput.value || ''
+        apiKeyError.value = false
+    }, 300)
+
+    watch(apiKeyInput, (newVal, oldVal) => {
+        if (newVal !== oldVal) {
+            updateAPIKeyOnDeta()
+        }
+    })
+}
 </script>
 
 <template>
@@ -25,12 +63,16 @@ const maskedApiKey = computed(() => {
                 OpenAI dashboard
             </GpLink>.
         </div>
-        <div v-if="!instanceApiKey" text-gray-5 dark:text-gray-1 mt-3>
+        <div v-if="!(instanceApiKey && !isDetaEnabled)" text-gray-5 dark:text-gray-1 mt-3>
             <UInput
                 v-model="apiKeyInput"
                 placeholder="Enter your API Key"
                 text-11px sm:text-4
                 w-full text-gray-5 dark:text-gray-1
+                :when="{
+                    blur: onBlur,
+                }"
+                :error="apiKeyError"
             />
         </div>
         <div v-else>
@@ -40,8 +82,13 @@ const maskedApiKey = computed(() => {
             >
                 Instance API Key
             </div>
-            <div my-3>
-                This instance has a shared API key already set up.
+            <div my-3 />
+            <div v-if="isDetaEnabled" text-color-lighter text-8px sm:text-13px>
+                {{
+                    isDetaEnabled
+                        ? 'The API Key is setup and stored on Deta.'
+                        : 'This instance has a shared API key already set up.'
+                }}
             </div>
             <div
                 text-color mt-3 font-code

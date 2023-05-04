@@ -24,5 +24,8 @@ export function useAppearance() {
     return {
         color,
         setPalette,
+        navigationBarPosition,
     }
 }
+
+export type NavigationBarPosition = 'top' | 'bottom' | 'left' | 'right'

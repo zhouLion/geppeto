@@ -6,3 +6,21 @@
         chat-fedml
     </div>
 </template>
+
+<style scoped>
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.4);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+img {
+    animation: pulse 2s infinite;
+}
+</style>

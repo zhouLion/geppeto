@@ -3,7 +3,7 @@ const props = defineProps<{ modelValue: string }>()
 const emit = defineEmits(['update:modelValue', 'send'])
 
 const { apiKey } = useSettings()
-const { isTypingInCurrentConversation } = useConversations()
+const { isTypingInCurrentConversation, currentConversation, stopConversationMessageGeneration } = useConversations()
 const textarea = ref()
 const isLogged = computed(() => Boolean(apiKey.value))
 
@@ -33,6 +33,14 @@ const handleEnter = (e: KeyboardEvent) => {
     onSend()
     textarea.value.style.height = '1.75rem'
 }
+
+function onStopGenerationClick() {
+    if (!currentConversation.value) {
+        return
+    }
+
+    stopConversationMessageGeneration(currentConversation.value.id)
+}
 </script>
 
 <template>
@@ -56,13 +64,12 @@ const handleEnter = (e: KeyboardEvent) => {
             w-full
             text-12px sm:text-16px
             outline-none overflow-y-auto bg-transparent overflow-x-hidden
-            placeholder="Type your message here..." leading-6
+            placeholder="Type your message here..." leading-6 font-text
             relative z-2 resize-none b-0 h-28px sm:h-7
             dark:placeholder:text-gray-4
             text-gray-8 dark:text-gray-1
             focus:placeholder:translate-x-6px placeholder:transition-all
             :disabled="!isLogged"
-            class="!font-[ColfaxAI]"
             :class="[
                 !isLogged ? 'cursor-not-allowed' : '',
             ]"
@@ -86,6 +93,21 @@ const handleEnter = (e: KeyboardEvent) => {
                     ]"
                 />
             </UButton>
+
+            <Transition name="appear-top">
+                <div
+                    v-if="isTypingInCurrentConversation"
+                    absolute top-0
+                    right-18 sm:right-12
+                >
+                    <UButton @click="onStopGenerationClick">
+                        <div i-tabler-player-stop-filled text-3 sm:text-5 />
+                        <div whitespace-nowrap text-10px sm:text-14px>
+                            Stop talking!
+                        </div>
+                    </UButton>
+                </div>
+            </Transition>
         </div>
     </div>
 </template>
